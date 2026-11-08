@@ -41,16 +41,38 @@ export function AppLayout({ config }: { config: RuntimeConfig }) {
               onChange={(v) => v && navigate(`/t/${v}/warehouses`)}
             />
             <Text size="sm">{me.data?.user.email}</Text>
-            <Button variant="default" size="xs" loading={logout.isPending} onClick={() => logout.mutate()}>Đăng xuất</Button>
+            <Button
+              variant="default"
+              size="xs"
+              loading={logout.isPending}
+              onClick={() => logout.mutate()}
+            >
+              Đăng xuất
+            </Button>
           </Group>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="xs">
         {tenantId &&
-          items.filter((i) => i.show).map((i) => (
-            <NavLink key={i.to} component={Link} to={`/t/${tenantId}/${i.to}`} label={i.label} active={pathname.includes(`/${i.to}`)} />
-          ))}
-        {isPlatformAdmin && <NavLink component={Link} to="/platform/tenants" label="Quản lý tenant" active={pathname.startsWith('/platform')} />}
+          items
+            .filter((i) => i.show)
+            .map((i) => (
+              <NavLink
+                key={i.to}
+                component={Link}
+                to={`/t/${tenantId}/${i.to}`}
+                label={i.label}
+                active={pathname.includes(`/${i.to}`)}
+              />
+            ))}
+        {isPlatformAdmin && (
+          <NavLink
+            component={Link}
+            to="/platform/tenants"
+            label="Quản lý tenant"
+            active={pathname.startsWith('/platform')}
+          />
+        )}
       </AppShell.Navbar>
       <AppShell.Main>
         <QueryState isLoading={me.isLoading} error={me.error}>
@@ -67,6 +89,7 @@ export function HomeRedirect() {
   if (me.isLoading) return null;
   const first = me.data?.tenants[0];
   if (first) return <Navigate to={`/t/${first.id}/warehouses`} replace />;
-  if (me.data?.platform.permissions.includes('platform.tenants.list')) return <Navigate to="/platform/tenants" replace />;
+  if (me.data?.platform.permissions.includes('platform.tenants.list'))
+    return <Navigate to="/platform/tenants" replace />;
   return <Text>Tài khoản chưa thuộc tenant nào. Hãy liên hệ quản trị viên.</Text>;
 }

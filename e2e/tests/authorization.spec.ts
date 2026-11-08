@@ -24,7 +24,8 @@ test.describe('authorization', () => {
 
   test('operator không gọi được API quản trị dù gửi trực tiếp', async ({ page }) => {
     await login(page, operator, password);
-    const tenantId = (await (await page.request.get('/api/iam/v1/me')).json()).tenants[0].id as string;
+    const tenantId = (await (await page.request.get('/api/iam/v1/me')).json()).tenants[0]
+      .id as string;
     const res = await page.request.post(`/api/iam/v1/tenants/${tenantId}/invitations`, {
       headers: { 'x-ol-csrf': '1' },
       data: { email: 'x@acme.test', roleIds: ['roles/iam.tenantAdmin'] },
@@ -42,7 +43,8 @@ test.describe('authorization', () => {
   test('tenant admin phải thiết lập MFA rồi mới quản trị được', async ({ page }) => {
     test.skip(process.env.E2E_FRESH_STACK !== '1', 'Cần stack vừa seed (E2E_FRESH_STACK=1)');
     await login(page, 'admin@acme.test', password); // login() tự xử lý màn hình thiết lập TOTP
-    const tenantId = (await (await page.request.get('/api/iam/v1/me')).json()).tenants[0].id as string;
+    const tenantId = (await (await page.request.get('/api/iam/v1/me')).json()).tenants[0]
+      .id as string;
     await page.goto(`/t/${tenantId}/users`);
     await expect(page.getByTestId('members-table')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Mời người dùng' })).toBeVisible();

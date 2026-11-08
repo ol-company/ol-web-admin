@@ -15,7 +15,10 @@ interface Tenant {
 
 export function TenantsPage() {
   const qc = useQueryClient();
-  const tenants = useQuery({ queryKey: ['platform-tenants'], queryFn: () => api.get<Tenant[]>('/api/iam/v1/tenants') });
+  const tenants = useQuery({
+    queryKey: ['platform-tenants'],
+    queryFn: () => api.get<Tenant[]>('/api/iam/v1/tenants'),
+  });
   const [form, setForm] = useState({ slug: '', name: '', adminEmail: '' });
   const create = useMutation({
     mutationFn: () => api.post<Tenant>('/api/iam/v1/tenants', form),
@@ -31,10 +34,24 @@ export function TenantsPage() {
     <Stack>
       <Title order={2}>Tenant (platform)</Title>
       <Group align="end">
-        <TextInput label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.currentTarget.value })} />
-        <TextInput label="Tên" value={form.name} onChange={(e) => setForm({ ...form, name: e.currentTarget.value })} />
-        <TextInput label="Email quản trị viên" value={form.adminEmail} onChange={(e) => setForm({ ...form, adminEmail: e.currentTarget.value })} />
-        <Button loading={create.isPending} onClick={() => create.mutate()}>Tạo tenant</Button>
+        <TextInput
+          label="Slug"
+          value={form.slug}
+          onChange={(e) => setForm({ ...form, slug: e.currentTarget.value })}
+        />
+        <TextInput
+          label="Tên"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.currentTarget.value })}
+        />
+        <TextInput
+          label="Email quản trị viên"
+          value={form.adminEmail}
+          onChange={(e) => setForm({ ...form, adminEmail: e.currentTarget.value })}
+        />
+        <Button loading={create.isPending} onClick={() => create.mutate()}>
+          Tạo tenant
+        </Button>
       </Group>
       <QueryState isLoading={tenants.isLoading} error={tenants.error}>
         <Table>

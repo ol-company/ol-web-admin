@@ -11,7 +11,10 @@ import { warehousesApi } from './api';
 export function WarehousesPage() {
   const { tenantId = '' } = useParams();
   const qc = useQueryClient();
-  const list = useQuery({ queryKey: ['warehouses', tenantId], queryFn: () => warehousesApi.list(tenantId) });
+  const list = useQuery({
+    queryKey: ['warehouses', tenantId],
+    queryFn: () => warehousesApi.list(tenantId),
+  });
   const { can } = usePermissions(`tenants/${tenantId}`);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
@@ -30,9 +33,20 @@ export function WarehousesPage() {
       <Title order={2}>Kho</Title>
       {can('warehouse.warehouses.create') && (
         <Group align="end">
-          <TextInput label="Mã kho" placeholder="HCM-01" value={code} onChange={(e) => setCode(e.currentTarget.value.toUpperCase())} />
-          <TextInput label="Tên kho" value={name} onChange={(e) => setName(e.currentTarget.value)} />
-          <Button loading={create.isPending} onClick={() => create.mutate()}>Tạo kho</Button>
+          <TextInput
+            label="Mã kho"
+            placeholder="HCM-01"
+            value={code}
+            onChange={(e) => setCode(e.currentTarget.value.toUpperCase())}
+          />
+          <TextInput
+            label="Tên kho"
+            value={name}
+            onChange={(e) => setName(e.currentTarget.value)}
+          />
+          <Button loading={create.isPending} onClick={() => create.mutate()}>
+            Tạo kho
+          </Button>
         </Group>
       )}
       <QueryState isLoading={list.isLoading} error={list.error}>
@@ -41,7 +55,9 @@ export function WarehousesPage() {
             {list.data?.map((w) => (
               <Table.Tr key={w.id}>
                 <Table.Td>
-                  <Anchor component={Link} to={`/t/${tenantId}/warehouses/${w.id}`}>{w.code}</Anchor>
+                  <Anchor component={Link} to={`/t/${tenantId}/warehouses/${w.id}`}>
+                    {w.code}
+                  </Anchor>
                 </Table.Td>
                 <Table.Td>{w.name}</Table.Td>
               </Table.Tr>

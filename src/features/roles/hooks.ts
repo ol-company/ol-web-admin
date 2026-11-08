@@ -3,8 +3,10 @@ import { notifications } from '@mantine/notifications';
 import { errorMessage } from '../../shared/api/http';
 import { rolesApi } from './api';
 
-export const useRoles = (t: string) => useQuery({ queryKey: ['roles', t], queryFn: () => rolesApi.list(t), enabled: Boolean(t) });
-export const usePermissionCatalog = () => useQuery({ queryKey: ['permission-catalog'], queryFn: rolesApi.permissions, staleTime: 300_000 });
+export const useRoles = (t: string) =>
+  useQuery({ queryKey: ['roles', t], queryFn: () => rolesApi.list(t), enabled: Boolean(t) });
+export const usePermissionCatalog = () =>
+  useQuery({ queryKey: ['permission-catalog'], queryFn: rolesApi.permissions, staleTime: 300_000 });
 
 export function useRoleMutation<A>(t: string, fn: (a: A) => Promise<unknown>, successText: string) {
   const qc = useQueryClient();

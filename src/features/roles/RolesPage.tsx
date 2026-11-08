@@ -1,4 +1,15 @@
-import { Badge, Button, Group, Modal, MultiSelect, Stack, Table, Text, TextInput, Title } from '@mantine/core';
+import {
+  Badge,
+  Button,
+  Group,
+  Modal,
+  MultiSelect,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
 import { useParams } from 'react-router';
@@ -12,7 +23,11 @@ export function RolesPage() {
   const roles = useRoles(tenantId);
   const { can } = usePermissions(`tenants/${tenantId}`);
   const [opened, { open, close }] = useDisclosure(false);
-  const remove = useRoleMutation(tenantId, (name: string) => rolesApi.remove(tenantId, name), 'Đã xóa role');
+  const remove = useRoleMutation(
+    tenantId,
+    (name: string) => rolesApi.remove(tenantId, name),
+    'Đã xóa role',
+  );
 
   return (
     <Stack>
@@ -34,7 +49,9 @@ export function RolesPage() {
               <Table.Tr key={r.id}>
                 <Table.Td>
                   <Text fw={500}>{r.title}</Text>
-                  <Text size="xs" c="dimmed">{r.id}</Text>
+                  <Text size="xs" c="dimmed">
+                    {r.id}
+                  </Text>
                   {r.isSystem && <Badge size="xs">hệ thống</Badge>}
                 </Table.Td>
                 <Table.Td>
@@ -42,7 +59,14 @@ export function RolesPage() {
                 </Table.Td>
                 <Table.Td>
                   {!r.isSystem && can('iam.roles.delete') && (
-                    <Button size="xs" color="red" variant="subtle" onClick={() => remove.mutate(r.id.split('/').pop()!)}>Xóa</Button>
+                    <Button
+                      size="xs"
+                      color="red"
+                      variant="subtle"
+                      onClick={() => remove.mutate(r.id.split('/').pop()!)}
+                    >
+                      Xóa
+                    </Button>
                   )}
                 </Table.Td>
               </Table.Tr>
@@ -62,19 +86,40 @@ function CreateRoleForm({ tenantId, onDone }: { tenantId: string; onDone: () => 
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
   const [permissions, setPermissions] = useState<string[]>([]);
-  const create = useRoleMutation(tenantId, () => rolesApi.create(tenantId, { name, title, permissions }), 'Đã tạo role');
+  const create = useRoleMutation(
+    tenantId,
+    () => rolesApi.create(tenantId, { name, title, permissions }),
+    'Đã tạo role',
+  );
   return (
     <Stack>
-      <TextInput label="Tên (định danh)" description="Chữ và số, ví dụ stockAuditor" value={name} onChange={(e) => setName(e.currentTarget.value)} />
-      <TextInput label="Tiêu đề hiển thị" value={title} onChange={(e) => setTitle(e.currentTarget.value)} />
+      <TextInput
+        label="Tên (định danh)"
+        description="Chữ và số, ví dụ stockAuditor"
+        value={name}
+        onChange={(e) => setName(e.currentTarget.value)}
+      />
+      <TextInput
+        label="Tiêu đề hiển thị"
+        value={title}
+        onChange={(e) => setTitle(e.currentTarget.value)}
+      />
       <MultiSelect
         label="Permission"
         searchable
-        data={(catalog.data ?? []).map((p) => ({ value: p.name, label: `${p.name}${p.requiresMfa ? ' (MFA)' : ''}` }))}
+        data={(catalog.data ?? []).map((p) => ({
+          value: p.name,
+          label: `${p.name}${p.requiresMfa ? ' (MFA)' : ''}`,
+        }))}
         value={permissions}
         onChange={setPermissions}
       />
-      <Button loading={create.isPending} onClick={() => create.mutate(undefined, { onSuccess: onDone })}>Tạo</Button>
+      <Button
+        loading={create.isPending}
+        onClick={() => create.mutate(undefined, { onSuccess: onDone })}
+      >
+        Tạo
+      </Button>
     </Stack>
   );
 }
