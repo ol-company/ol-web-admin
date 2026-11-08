@@ -12,7 +12,9 @@ export default defineConfig({
   server: {
     // Chạy dev trong container sau Caddy: file trên ổ Windows (/mnt/d) không phát sự kiện inotify → dùng polling
     watch: process.env.VITE_POLL === '1' ? { usePolling: true, interval: 500 } : undefined,
-    hmr: process.env.VITE_HMR_HOST ? { host: process.env.VITE_HMR_HOST, protocol: 'wss', clientPort: 443 } : undefined,
+    hmr: process.env.VITE_HMR_HOST
+      ? { host: process.env.VITE_HMR_HOST, protocol: 'wss', clientPort: 443 }
+      : undefined,
     allowedHosts: ['app.ol.test'],
   },
   test: {

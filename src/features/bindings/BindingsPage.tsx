@@ -16,11 +16,21 @@ import { bindingsApi } from './api';
 export function BindingsPage() {
   const { tenantId = '' } = useParams();
   const qc = useQueryClient();
-  const bindings = useQuery({ queryKey: ['bindings', tenantId], queryFn: () => bindingsApi.list(tenantId) });
+  const bindings = useQuery({
+    queryKey: ['bindings', tenantId],
+    queryFn: () => bindingsApi.list(tenantId),
+  });
   const members = useMembers(tenantId);
-  const groups = useQuery({ queryKey: ['groups', tenantId], queryFn: () => groupsApi.list(tenantId) });
+  const groups = useQuery({
+    queryKey: ['groups', tenantId],
+    queryFn: () => groupsApi.list(tenantId),
+  });
   const roles = useRoles(tenantId);
-  const warehouses = useQuery({ queryKey: ['warehouses', tenantId], queryFn: () => warehousesApi.list(tenantId), retry: false });
+  const warehouses = useQuery({
+    queryKey: ['warehouses', tenantId],
+    queryFn: () => warehousesApi.list(tenantId),
+    retry: false,
+  });
   const { can } = usePermissions(`tenants/${tenantId}`);
 
   const [principalType, setPrincipalType] = useState<'user' | 'group'>('user');
@@ -36,14 +46,31 @@ export function BindingsPage() {
     },
     onError: (e: unknown) => notifications.show({ color: 'red', message: errorMessage(e) }),
   };
-  const create = useMutation({ mutationFn: () => bindingsApi.create(tenantId, { principalType, principalId: principalId!, roleId: roleId!, resource }), ...done });
-  const remove = useMutation({ mutationFn: (id: string) => bindingsApi.remove(tenantId, id), ...done });
+  const create = useMutation({
+    mutationFn: () =>
+      bindingsApi.create(tenantId, {
+        principalType,
+        principalId: principalId!,
+        roleId: roleId!,
+        resource,
+      }),
+    ...done,
+  });
+  const remove = useMutation({
+    mutationFn: (id: string) => bindingsApi.remove(tenantId, id),
+    ...done,
+  });
 
   const nameOf = (type: string, id: string) =>
-    type === 'user' ? members.data?.find((m) => m.id === id)?.email ?? id : groups.data?.find((g) => g.id === id)?.name ?? id;
+    type === 'user'
+      ? (members.data?.find((m) => m.id === id)?.email ?? id)
+      : (groups.data?.find((g) => g.id === id)?.name ?? id);
   const scopeOptions = [
     { value: `tenants/${tenantId}`, label: 'Toàn tenant' },
-    ...(warehouses.data ?? []).map((w) => ({ value: `tenants/${tenantId}/warehouses/${w.id}`, label: `Kho ${w.code}` })),
+    ...(warehouses.data ?? []).map((w) => ({
+      value: `tenants/${tenantId}/warehouses/${w.id}`,
+      label: `Kho ${w.code}`,
+    })),
   ];
 
   return (
@@ -51,17 +78,47 @@ export function BindingsPage() {
       <Title order={2}>Gán quyền</Title>
       {can('iam.roleBindings.create') && (
         <Group align="end">
-          <SegmentedControl value={principalType} onChange={(v) => { setPrincipalType(v as 'user' | 'group'); setPrincipalId(null); }} data={[{ value: 'user', label: 'Người dùng' }, { value: 'group', label: 'Nhóm' }]} />
+          <SegmentedControl
+            value={principalType}
+            onChange={(v) => {
+              setPrincipalType(v as 'user' | 'group');
+              setPrincipalId(null);
+            }}
+            data={[
+              { value: 'user', label: 'Người dùng' },
+              { value: 'group', label: 'Nhóm' },
+            ]}
+          />
           <Select
             label="Chủ thể"
             searchable
             value={principalId}
             onChange={setPrincipalId}
-            data={principalType === 'user' ? (members.data ?? []).map((m) => ({ value: m.id, label: m.email })) : (groups.data ?? []).map((g) => ({ value: g.id, label: g.name }))}
+            data={
+              principalType === 'user'
+                ? (members.data ?? []).map((m) => ({ value: m.id, label: m.email }))
+                : (groups.data ?? []).map((g) => ({ value: g.id, label: g.name }))
+            }
           />
-          <Select label="Role" value={roleId} onChange={setRoleId} data={(roles.data ?? []).map((r) => ({ value: r.id, label: r.title }))} />
-          <Select label="Phạm vi" value={resource} onChange={(v) => setResource(v ?? `tenants/${tenantId}`)} data={scopeOptions} />
-          <Button disabled={!principalId || !roleId} loading={create.isPending} onClick={() => create.mutate()}>Gán</Button>
+          <Select
+            label="Role"
+            value={roleId}
+            onChange={setRoleId}
+            data={(roles.data ?? []).map((r) => ({ value: r.id, label: r.title }))}
+          />
+          <Select
+            label="Phạm vi"
+            value={resource}
+            onChange={(v) => setResource(v ?? `tenants/${tenantId}`)}
+            data={scopeOptions}
+          />
+          <Button
+            disabled={!principalId || !roleId}
+            loading={create.isPending}
+            onClick={() => create.mutate()}
+          >
+            Gán
+          </Button>
         </Group>
       )}
       <QueryState isLoading={bindings.isLoading} error={bindings.error}>
@@ -77,11 +134,25 @@ export function BindingsPage() {
           <Table.Tbody>
             {bindings.data?.map((b) => (
               <Table.Tr key={b.id}>
-                <Table.Td>{b.principalType === 'group' ? '👥 ' : ''}{nameOf(b.principalType, b.principalId)}</Table.Td>
-                <Table.Td>{b.roleId}</Table.Td>
-                <Table.Td><Text size="xs">{b.resource}</Text></Table.Td>
                 <Table.Td>
-                  {can('iam.roleBindings.delete') && <Button size="xs" color="red" variant="subtle" onClick={() => remove.mutate(b.id)}>Thu hồi</Button>}
+                  {b.principalType === 'group' ? '👥 ' : ''}
+                  {nameOf(b.principalType, b.principalId)}
+                </Table.Td>
+                <Table.Td>{b.roleId}</Table.Td>
+                <Table.Td>
+                  <Text size="xs">{b.resource}</Text>
+                </Table.Td>
+                <Table.Td>
+                  {can('iam.roleBindings.delete') && (
+                    <Button
+                      size="xs"
+                      color="red"
+                      variant="subtle"
+                      onClick={() => remove.mutate(b.id)}
+                    >
+                      Thu hồi
+                    </Button>
+                  )}
                 </Table.Td>
               </Table.Tr>
             ))}

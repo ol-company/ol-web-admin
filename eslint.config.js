@@ -14,4 +14,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
+  {
+    // File .mjs/.js không được typescript-eslint tắt `no-undef`, nên phải khai báo global của Node
+    files: ['scripts/**/*.{js,mjs}'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
+  },
 );

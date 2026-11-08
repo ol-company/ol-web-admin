@@ -2,9 +2,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { meApi } from './api';
 
-export const useSession = () => useQuery({ queryKey: ['session'], queryFn: meApi.session, staleTime: 60_000 });
+export const useSession = () =>
+  useQuery({ queryKey: ['session'], queryFn: meApi.session, staleTime: 60_000 });
 
-export const useMe = (enabled: boolean) => useQuery({ queryKey: ['me'], queryFn: meApi.me, enabled, staleTime: 60_000 });
+export const useMe = (enabled: boolean) =>
+  useQuery({ queryKey: ['me'], queryFn: meApi.me, enabled, staleTime: 60_000 });
 
 // Quyền hiệu lực tại một resource → dùng để ẩn/hiện nút. Đây chỉ là UX:
 // backend luôn kiểm quyền lại, ẩn nút không phải là biện pháp bảo mật.

@@ -23,7 +23,9 @@ export function AuditPage() {
     queryKey: ['audit', tenantId],
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      api.get<AuditEvent[]>(`/api/iam/v1/tenants/${tenantId}/audit-events?limit=${PAGE}${pageParam ? `&before=${pageParam}` : ''}`),
+      api.get<AuditEvent[]>(
+        `/api/iam/v1/tenants/${tenantId}/audit-events?limit=${PAGE}${pageParam ? `&before=${pageParam}` : ''}`,
+      ),
     getNextPageParam: (last) => (last.length === PAGE ? last[last.length - 1]!.id : undefined),
   });
   const rows = q.data?.pages.flat() ?? [];
@@ -48,16 +50,28 @@ export function AuditPage() {
                 <Table.Td>{new Date(e.occurredAt).toLocaleString('vi-VN')}</Table.Td>
                 <Table.Td>{e.actor}</Table.Td>
                 <Table.Td>
-                  <Badge color={e.outcome === 'success' ? 'green' : 'red'} variant="light">{e.action}</Badge>
+                  <Badge color={e.outcome === 'success' ? 'green' : 'red'} variant="light">
+                    {e.action}
+                  </Badge>
                 </Table.Td>
                 <Table.Td>{e.resource}</Table.Td>
-                <Table.Td><Code>{JSON.stringify(e.details)}</Code></Table.Td>
+                <Table.Td>
+                  <Code>{JSON.stringify(e.details)}</Code>
+                </Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </Table>
       </QueryState>
-      {q.hasNextPage && <Button variant="light" loading={q.isFetchingNextPage} onClick={() => void q.fetchNextPage()}>Tải thêm</Button>}
+      {q.hasNextPage && (
+        <Button
+          variant="light"
+          loading={q.isFetchingNextPage}
+          onClick={() => void q.fetchNextPage()}
+        >
+          Tải thêm
+        </Button>
+      )}
     </Stack>
   );
 }

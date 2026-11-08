@@ -7,7 +7,13 @@ export interface SessionInfo {
 }
 
 export interface Me {
-  user: { id: string; email: string; displayName: string | null; status: string; mfaEnrolled: boolean };
+  user: {
+    id: string;
+    email: string;
+    displayName: string | null;
+    status: string;
+    mfaEnrolled: boolean;
+  };
   tenants: Array<{ id: string; slug: string; name: string }>;
   platform: { permissions: string[] };
 }
@@ -16,6 +22,8 @@ export const meApi = {
   session: () => api.get<SessionInfo>('/auth/session'),
   me: () => api.get<Me>('/api/iam/v1/me'),
   permissions: (resource: string) =>
-    api.get<{ resource: string; permissions: string[] }>(`/api/iam/v1/me/permissions?resource=${encodeURIComponent(resource)}`),
+    api.get<{ resource: string; permissions: string[] }>(
+      `/api/iam/v1/me/permissions?resource=${encodeURIComponent(resource)}`,
+    ),
   logout: () => api.post<{ logoutUrl: string }>('/auth/logout'),
 };
